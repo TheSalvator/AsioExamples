@@ -30,3 +30,6 @@ target_link_libraries(AsioWithUring INTERFACE asio::asio liburing::liburing)
 
 add_executable(UseYaclibFuture UseYaclibFuture.cpp)
 target_link_libraries(UseYaclibFuture PRIVATE AsioWithUring yaclib::yaclib)
+
+add_executable(MyIoContext MyIoContext.cpp)
+target_link_libraries(MyIoContext PRIVATE AsioWithUring liburing::liburing glog::glog nonstd::expected-lite)
