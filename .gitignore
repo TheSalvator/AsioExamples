@@ -30,3 +30,13 @@
 *.exe
 *.out
 *.app
+
+# Unsorted
+.vscode
+.venv
+
+build
+Release
+RelWithDebInfo
+MinSizeRel
+Debug
