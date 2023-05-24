@@ -21,7 +21,7 @@ struct LikeErrorCode : asio::error_code {
     }
 
     LikeErrorCode(const asio::error_code &ec)
-        : asio::error_code(ec.value(), ec.category()) {}
+        : asio::error_code(ec) {}
 
     LikeErrorCode(LikeErrorCode &&) noexcept = default;
     LikeErrorCode(const LikeErrorCode &) noexcept = default;
@@ -38,16 +38,13 @@ public:
     using FutureType = yaclib::Future<ValueType, ErrorType>;
     using PromiseType = yaclib::Promise<ValueType, ErrorType>;
 
-    FutureType getFuture() noexcept { return std::move(future_); }
-
-protected:
-    void createContract() {
+    FutureType createFuture() noexcept {
         auto [f, p] = yaclib::MakeContract<ValueType, ErrorType>();
-        future_ = std::move(f);
         promise_ = std::move(p);
+        return std::move(f);
     }
 
-    FutureType future_{};
+protected:
     PromiseType promise_{};
 };
 
@@ -182,7 +179,7 @@ class FutureHandlerSelector<void(std::exception_ptr, Arg...)>
 template <typename Signature>
 class FutureHandler : public FutureHandlerSelector<Signature> {
 public:
-    explicit FutureHandler(UseYaclibFuture) { this->createContract(); }
+    explicit FutureHandler(UseYaclibFuture) {}
 };
 
 template <typename Signature>
@@ -192,7 +189,7 @@ public:
     using return_type = typename completion_handler_type::FutureType;
 
     explicit FutureHandlerAsyncResult(completion_handler_type &handler)
-        : return_(handler.getFuture()) {}
+        : return_(handler.createFuture()) {}
 
     return_type get() noexcept { return std::move(return_); }
 
